@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.min.css" />
+    <title>Gif Search</title>
+    <style type="text/css">
+        button,
+        div,
+        form,
+        input {
+            margin: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+            <div class="jumbotron" style="background-color: #20315A ; color: white;">
+                    <h1 class="text-center">
+                      <strong>
+                        <i class="fa fa-newspaper-o"></i> Find Your Gifs!</strong>
+                    </h1>
+                  </div>
+
+        <div>
+        <h1>Gif Search</h1>
+
+        
+        
+        <div>
+        <form id="gif-form">
+            <label for="gif-input">Enter a search term</label>
+            <input type="text" id="gif-input"><br>
+            <input id="add-gif" type="submit" value="Add a button">
+        </form>
+        </div>
+
+       
+        <div class="card">
+                <h5 class="card-header">Your Buttons (please click to see gifs)</h5>
+                <div class="card-body">
+                  <h5 class="card-title">
+                        <div>
+                            <div id="buttons-display"></div>
+                        </div>
+                  </h5>    
+                </div>
+              </div>
+
+        <div>
+            <div id="buttons-display"></div>
+        </div>
+
+        <div>
+            <h2>
+                Your GIFs:
+            </h2>
+        </div>
+      
+        <div id="gifs-display""></div>   <!-- Gifs to be displayed here-->
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script type="text/javascript">
+           
+            var gifArray = [];
+
+            function showGifAndRating() {
+
+                var gif = $(this).attr("data-name");
+                var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
+                    gif + "&api_key=j0zZthA8nfV3a5RBvRi2qvQCSmL8ZbE3&limit=2git0";
+
+                $.ajax({
+                    url: queryURL,
+                    method: "GET"
+                }).then(function (response) {
+
+                    console.log(queryURL);
+                    console.log(response.data);
+
+                    var results = response.data;
+
+                    for (var i = 0; i < results.length; i++) {
+
+            
+                        if (results[i].rating !== "r" && results[i].rating !== "pg-13") {
+                            
+                            var gifDiv = $("<div>");
+
+                            var rating = results[i].rating;
+
+                            var ratingDisplay = $("<p>").text("Rating: " + rating);
+
+                            var foundGif = $("<img>");
+                            
+                            foundGif.attr("src", results[i].images.downsized_still.url);
+                            foundGif.attr("data-still", results[i].images.downsized_still.url);
+                            foundGif.attr("data-animate", results[i].images.downsized.url);
+                            foundGif.attr("data-state", "still");
+                            foundGif.attr("class", "gif");
+
+
+                            gifDiv.append(ratingDisplay);
+                            gifDiv.append(foundGif);
+
+                            $("#gifs-display").prepend(gifDiv);
+                        }
+
+                        
+                    }
+                    
+                    $(".gif").on("click", function () {
+                            //alert("Clicked!");
+                            var state = $(this).attr("data-state");
+                            //toggling between still and animated gifs
+                            if (state === "still") {
+                                $(this).attr("src", $(this).attr("data-animate"));
+                                $(this).attr("data-state", "animate");
+                            } else {
+                                $(this).attr("src", $(this).attr("data-still"));
+                                $(this).attr("data-state", "still");
+                            }
+                        });
+                });
+            }
+
+            // Function for displaying movie data
+            function renderButtons() {
+
+                $("#buttons-display").empty();  // Deleting the buttons before adding gifs to avoid having repeat buttons
+
+                for (var i = 0; i < gifArray.length; i++) {
+
+                    var newButton = $("<button>"); //creates buttons for each gif in the array
+                 
+                    newButton.addClass("pix");
+                
+                    newButton.attr("data-name", gifArray[i]);
+                 
+                    newButton.text(gifArray[i]);
+                    
+                    $("#buttons-display").append(newButton);
+                }
+            }
+
+            $("#add-gif").on("click", function (event) {
+                event.preventDefault();
+                
+                // This line grabs the input from the textbox
+                $("#gif-input").empty();
+                var inputTerm = $("#gif-input").val().trim();
+
+               
+                gifArray.push(inputTerm); // pushes the search item from the textbox to the array
+               
+                renderButtons();
+                
+                $("#gif-input").val(""); //clears the search term field when its button is created
+            });
+
+
+
+            // Function to display gifs and ratings
+            $(document).on("click", ".pix", showGifAndRating);
+           
+            renderButtons();
+
+        </script>
+    </div>
+</body>
+
+</html>
