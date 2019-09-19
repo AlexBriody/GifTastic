@@ -130,12 +130,10 @@
                     // Function for displaying movie data
                     function renderButtons() {
 
-                        $("#buttons-display").empty(); // Deleting the buttons before adding gifs to avoid having repeat
-                        buttons
+                        $("#buttons-display").empty(); // Deleting the buttons before adding gifs to avoid having repeat buttons
 
                         for (var i = 0; i < gifArray.length; i++) {
-                            var newButton = $("<button>"); //creates buttons for
-                            each gif in the array
+                            var newButton = $("<button>"); //creates buttons for gif in the array
 
                             newButton.addClass("pix");
 
